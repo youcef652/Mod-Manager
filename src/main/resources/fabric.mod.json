@@ -1,16 +1,18 @@
 {
 	"schemaVersion": 1,
 	"id": "modmanager",
-	"version": "${version}",
+	"version": "1.0.0",
 	"name": "Mod Manager",
 	"description": "A client-side manager for Minecraft mods and resource packs.",
 	"authors": [
-		"Me!"
+		"veosee"
 	],
 	"contact": {
+		"homepage": "https://modrinth.com",
+		"issues": "https://github.com/youcef652/Mod-Manager/issues",
 		"sources": "https://github.com/youcef652/Mod-Manager"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/modmanager/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -22,7 +24,7 @@
 		]
 	},
 	"depends": {
-		"fabricloader": ">=0.19.5",
+		"fabricloader": ">=0.19.3",
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
