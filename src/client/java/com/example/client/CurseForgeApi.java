@@ -68,7 +68,7 @@ public final class CurseForgeApi {
 				resolvedUrl = send(urlEndpoint).thenApply(body ->
 						JsonParser.parseString(body).getAsJsonObject().get("data").getAsString());
 			}
-			return resolvedUrl.thenCompose(downloadUrl -> sendBytes(downloadUrl)).thenApply(bytes -> {
+			return resolvedUrl.thenCompose(downloadUrl -> sendBytes(downloadUrl)).thenCompose(bytes -> {
 				try {
 					Path directory = gameDirectory.resolve(switch (type) {
 						case "Resource Packs" -> "resourcepacks";
@@ -78,13 +78,65 @@ public final class CurseForgeApi {
 					});
 					Files.createDirectories(directory);
 					String filename = file.get("fileName").getAsString();
-					Files.write(directory.resolve(Path.of(filename).getFileName()), bytes);
-					return filename;
+					Path target = directory.resolve(Path.of(filename).getFileName());
+					Files.write(target, bytes);
+					return downloadRequiredDependencies(file, type, gameDirectory)
+							.thenApply(ignored -> filename);
 				} catch (Exception error) {
-					throw new IllegalStateException("Could not save CurseForge file", error);
+					return CompletableFuture.failedFuture(new IllegalStateException("Could not save CurseForge file", error));
 				}
 			});
 		});
+	}
+
+	private static CompletableFuture<Void> downloadRequiredDependencies(JsonObject file, String type,
+			Path gameDirectory) {
+		if (!file.has("dependencies") || file.get("dependencies").isJsonNull()) {
+			return CompletableFuture.completedFuture(null);
+		}
+		CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+		for (JsonElement element : file.getAsJsonArray("dependencies")) {
+			JsonObject dependency = element.getAsJsonObject();
+			if (dependency.has("relationType") && dependency.get("relationType").getAsInt() == 3
+					&& dependency.has("modId") && dependency.has("fileId")) {
+				chain = chain.thenCompose(ignored -> downloadDependency(dependency, type, gameDirectory));
+			}
+		}
+		return chain;
+	}
+
+	private static CompletableFuture<Void> downloadDependency(JsonObject dependency, String type, Path gameDirectory) {
+		String url = API_URL + "/mods/" + dependency.get("modId").getAsLong()
+				+ "/files/" + dependency.get("fileId").getAsLong();
+		return send(url).thenCompose(response -> {
+			JsonObject file = JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("data");
+			CompletableFuture<String> resolvedUrl;
+			if (file.has("downloadUrl") && !file.get("downloadUrl").isJsonNull()) {
+				resolvedUrl = CompletableFuture.completedFuture(file.get("downloadUrl").getAsString());
+			} else {
+				String endpoint = API_URL + "/mods/" + dependency.get("modId").getAsLong()
+						+ "/files/" + dependency.get("fileId").getAsLong() + "/download-url";
+				resolvedUrl = send(endpoint).thenApply(body ->
+						JsonParser.parseString(body).getAsJsonObject().get("data").getAsString());
+			}
+			return resolvedUrl.thenCompose(downloadUrl -> sendBytes(downloadUrl))
+					.thenAccept(bytes -> saveFile(file.get("fileName").getAsString(), bytes, type, gameDirectory));
+		});
+	}
+
+	private static void saveFile(String filename, byte[] bytes, String type, Path gameDirectory) {
+		try {
+			Path directory = gameDirectory.resolve(switch (type) {
+				case "Resource Packs" -> "resourcepacks";
+				case "Data Packs" -> "datapacks";
+				case "Shader Packs" -> "shaderpacks";
+				default -> "mods";
+			});
+			Files.createDirectories(directory);
+			Files.write(directory.resolve(Path.of(filename).getFileName()), bytes);
+		} catch (Exception error) {
+			throw new IllegalStateException("Could not save CurseForge dependency", error);
+		}
 	}
 
 	private static CompletableFuture<String> send(String url) {
