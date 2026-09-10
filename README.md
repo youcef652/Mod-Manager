@@ -1,4 +1,4 @@
-# Mod Manager
+i# Mod Manager
 
 Client-side Fabric mod for Minecraft Java Edition 1.21.11.
 
