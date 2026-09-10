@@ -94,7 +94,8 @@ public class UpdatesScreen extends Screen {
 		status = "Downloading " + update.latestName() + "...";
 		Path existingFile = FabricLoader.getInstance().getAllMods().stream()
 				.filter(mod -> mod.getMetadata().getId().equals(update.projectId()))
-				.map(ModContainer::getRootPath)
+				.flatMap(mod -> mod.getOrigin().getPaths().stream())
+				.filter(java.nio.file.Files::isRegularFile)
 				.findFirst()
 				.orElse(null);
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),

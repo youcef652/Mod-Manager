@@ -39,7 +39,8 @@ public final class AutoUpdateService {
 	private static void download(ModrinthApi.UpdateResult update) {
 		Path existingFile = FabricLoader.getInstance().getAllMods().stream()
 				.filter(mod -> mod.getMetadata().getId().equals(update.projectId()))
-				.map(ModContainer::getRootPath)
+				.flatMap(mod -> mod.getOrigin().getPaths().stream())
+				.filter(java.nio.file.Files::isRegularFile)
 				.findFirst()
 				.orElse(null);
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
