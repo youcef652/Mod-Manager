@@ -2,6 +2,7 @@ package com.example.client;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -11,6 +12,7 @@ public class SettingsScreen extends Screen {
 	private static final int BUTTON_GAP = 24;
 
 	private final Screen parent;
+	private EditBox curseForgeKeyBox;
 
 	public SettingsScreen(Screen parent) {
 		super(Component.literal("Settings"));
@@ -20,7 +22,7 @@ public class SettingsScreen extends Screen {
 	@Override
 	protected void init() {
 		int buttonX = (this.width - BUTTON_WIDTH) / 2;
-		int firstButtonY = this.height / 2 - BUTTON_GAP * 3;
+		int firstButtonY = 24;
 
 		addRenderableWidget(toggleButton("Auto Update", firstButtonY,
 				() -> ModManagerSettings.autoUpdate,
@@ -55,6 +57,12 @@ public class SettingsScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.literal("Back"), button -> onClose())
 				.bounds(buttonX, firstButtonY + BUTTON_GAP * 6, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
+		curseForgeKeyBox = new EditBox(this.font, buttonX, firstButtonY + BUTTON_GAP * 5,
+				BUTTON_WIDTH, BUTTON_HEIGHT, Component.literal("CurseForge API Key"));
+		curseForgeKeyBox.setValue(ModManagerSettings.curseForgeApiKey);
+		curseForgeKeyBox.setHint(Component.literal("CurseForge API Key"));
+		curseForgeKeyBox.setMaxLength(256);
+		addRenderableWidget(curseForgeKeyBox);
 	}
 
 	private Button toggleButton(String label, int y, ToggleValue getter, ToggleSetter setter) {
@@ -76,13 +84,19 @@ public class SettingsScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		if (curseForgeKeyBox != null) {
+			ModManagerSettings.curseForgeApiKey = curseForgeKeyBox.getValue().trim();
+			ModManagerSettings.save();
+		}
 		this.minecraft.setScreen(this.parent);
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		renderBackground(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFF);
+		UiTheme.background(graphics, this);
+		UiTheme.panel(graphics, this.width / 2 - BUTTON_WIDTH / 2, 18,
+				this.width / 2 + BUTTON_WIDTH / 2, this.height - 10);
+		UiTheme.title(graphics, this, "Choose how Mod Manager behaves", 4);
 		super.render(graphics, mouseX, mouseY, delta);
 	}
 

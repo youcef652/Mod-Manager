@@ -18,6 +18,7 @@ public final class ModManagerSettings {
 	public static String resourcePacksSource = "Modrinth";
 	public static String shaderPacksSource = "Modrinth";
 	public static String dataPacksSource = "Modrinth";
+	public static String curseForgeApiKey = "";
 
 	private ModManagerSettings() {
 	}
@@ -38,6 +39,7 @@ public final class ModManagerSettings {
 			resourcePacksSource = stringValue(config, "resourcePacksSource", resourcePacksSource);
 			shaderPacksSource = stringValue(config, "shaderPacksSource", shaderPacksSource);
 			dataPacksSource = stringValue(config, "dataPacksSource", dataPacksSource);
+			curseForgeApiKey = stringValue(config, "curseForgeApiKey", curseForgeApiKey);
 		} catch (Exception ignored) {
 		}
 	}
@@ -53,6 +55,7 @@ public final class ModManagerSettings {
 		config.addProperty("resourcePacksSource", resourcePacksSource);
 		config.addProperty("shaderPacksSource", shaderPacksSource);
 		config.addProperty("dataPacksSource", dataPacksSource);
+		config.addProperty("curseForgeApiKey", curseForgeApiKey);
 		try {
 			Path file = configFile();
 			Files.createDirectories(file.getParent());

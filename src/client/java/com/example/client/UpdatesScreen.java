@@ -100,9 +100,11 @@ public class UpdatesScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		renderBackground(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFF);
-		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 100, 0xBFBFBF);
+		UiTheme.background(graphics, this);
+		UiTheme.panel(graphics, this.width / 2 - BUTTON_WIDTH / 2, 28,
+				this.width / 2 + BUTTON_WIDTH / 2, this.height - 10);
+		UiTheme.title(graphics, this, "Keep installed content current", 12);
+		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 100, UiTheme.MUTED);
 		super.render(graphics, mouseX, mouseY, delta);
 	}
 }

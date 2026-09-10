@@ -32,7 +32,8 @@ public final class CurseForgeApi {
 
 	public static CompletableFuture<List<ModrinthApi.SearchResult>> search(String type, String query) {
 		String url = API_URL + "/mods/search?gameId=432&classId=" + classId(type)
-				+ "&searchFilter=" + encode(query) + "&gameVersion=1.21.11&pageSize=8";
+				+ "&searchFilter=" + encode(query) + "&gameVersion=1.21.11&pageSize=8"
+				+ (type.equals("Mods") ? "&modLoaderType=4" : "");
 		return send(url).thenApply(response -> {
 			JsonArray data = JsonParser.parseString(response).getAsJsonObject().getAsJsonArray("data");
 			List<ModrinthApi.SearchResult> results = new ArrayList<>();
@@ -50,7 +51,8 @@ public final class CurseForgeApi {
 
 	public static CompletableFuture<String> downloadLatest(ModrinthApi.SearchResult project, String type,
 			Path gameDirectory) {
-		String url = API_URL + "/mods/" + project.projectId() + "/files?gameVersion=1.21.11&pageSize=1";
+		String url = API_URL + "/mods/" + project.projectId() + "/files?gameVersion=1.21.11&pageSize=1"
+				+ (type.equals("Mods") ? "&modLoaderType=4" : "");
 		return send(url).thenCompose(response -> {
 			JsonArray data = JsonParser.parseString(response).getAsJsonObject().getAsJsonArray("data");
 			if (data.isEmpty()) {
@@ -126,6 +128,9 @@ public final class CurseForgeApi {
 	}
 
 	private static String apiKey() {
+		if (!ModManagerSettings.curseForgeApiKey.isBlank()) {
+			return ModManagerSettings.curseForgeApiKey.trim();
+		}
 		String key = System.getenv("CURSEFORGE_API_KEY");
 		return key == null || key.isBlank() ? null : key;
 	}

@@ -6,9 +6,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class ModManagerScreen extends Screen {
-	private static final int BUTTON_WIDTH = 180;
+	private static final int BUTTON_WIDTH = 140;
 	private static final int BUTTON_HEIGHT = 20;
-	private static final int BUTTON_GAP = 24;
+	private static final int COLUMN_GAP = 8;
+	private static final int ROW_GAP = 24;
 	private String status = "";
 
 	public ModManagerScreen() {
@@ -17,27 +18,40 @@ public class ModManagerScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int buttonX = (this.width - BUTTON_WIDTH) / 2;
-		int firstButtonY = this.height / 2 - BUTTON_GAP * 2;
+		int leftX = this.width / 2 - BUTTON_WIDTH - COLUMN_GAP / 2;
+		int rightX = this.width / 2 + COLUMN_GAP / 2;
+		int firstButtonY = 72;
 
 		addRenderableWidget(Button.builder(Component.literal("Download"), button ->
 				this.minecraft.setScreen(new DownloadScreen(this)))
-				.bounds(buttonX, firstButtonY, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(leftX, firstButtonY, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
 		addRenderableWidget(Button.builder(Component.literal("Updates"), button ->
 				this.minecraft.setScreen(new UpdatesScreen(this)))
-				.bounds(buttonX, firstButtonY + BUTTON_GAP, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(rightX, firstButtonY, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.build());
+		addRenderableWidget(Button.builder(Component.literal("Manage"), button ->
+				this.minecraft.setScreen(new ContentManagementScreen(this)))
+				.bounds(leftX, firstButtonY + ROW_GAP, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
 		addRenderableWidget(Button.builder(Component.literal("Reload"), button -> reloadResources())
-				.bounds(buttonX, firstButtonY + BUTTON_GAP * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(rightX, firstButtonY + ROW_GAP, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.build());
+		addRenderableWidget(Button.builder(Component.literal("Restart Minecraft"), button -> restartMinecraft())
+				.bounds(leftX, firstButtonY + ROW_GAP * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
 		addRenderableWidget(Button.builder(Component.literal("Settings"), button ->
 				this.minecraft.setScreen(new SettingsScreen(this)))
-				.bounds(buttonX, firstButtonY + BUTTON_GAP * 3, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(rightX, firstButtonY + ROW_GAP * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
 		addRenderableWidget(Button.builder(Component.literal("Back"), button -> onClose())
-				.bounds(buttonX, firstButtonY + BUTTON_GAP * 5, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(this.width / 2 - BUTTON_WIDTH / 2, firstButtonY + ROW_GAP * 3, BUTTON_WIDTH, BUTTON_HEIGHT)
 				.build());
+	}
+
+	private void restartMinecraft() {
+		ModManagerSettings.save();
+		this.minecraft.stop();
 	}
 
 	private void reloadResources() {
@@ -53,12 +67,13 @@ public class ModManagerScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		renderBackground(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFF);
+		UiTheme.background(graphics, this);
+		UiTheme.panel(graphics, this.width / 2 - 154, 30, this.width / 2 + 154, this.height - 12);
+		UiTheme.title(graphics, this, "Manage your Minecraft content", 42);
 		super.render(graphics, mouseX, mouseY, delta);
 		if (!status.isEmpty()) {
-			graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, this.height / 2 + 110,
-					0xBFBFBF);
+				graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, this.height - 22,
+					UiTheme.ACCENT);
 		}
 	}
 }

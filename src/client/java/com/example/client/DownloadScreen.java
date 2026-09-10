@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public class DownloadScreen extends Screen {
-	private static final int BUTTON_WIDTH = 150;
+	private static final int BUTTON_WIDTH = 120;
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int BUTTON_GAP = 24;
 
@@ -30,7 +30,7 @@ public class DownloadScreen extends Screen {
 	protected void init() {
 		int leftColumnX = this.width / 2 - BUTTON_WIDTH - 8;
 		int rightColumnX = this.width / 2 + 8;
-		int firstButtonY = 72;
+		int firstButtonY = 30;
 
 		addRenderableWidget(selectionButton("Mods", leftColumnX, firstButtonY,
 				() -> selectType("Mods")));
@@ -41,9 +41,9 @@ public class DownloadScreen extends Screen {
 		addRenderableWidget(selectionButton("Shader Packs", rightColumnX, firstButtonY + BUTTON_GAP,
 				() -> selectType("Shader Packs")));
 
-		addRenderableWidget(selectionButton("Modrinth", leftColumnX, firstButtonY + BUTTON_GAP * 3,
+		addRenderableWidget(selectionButton("Modrinth", leftColumnX, firstButtonY + BUTTON_GAP * 2,
 				() -> selectSource("Modrinth")));
-		addRenderableWidget(selectionButton("CurseForge", rightColumnX, firstButtonY + BUTTON_GAP * 3,
+		addRenderableWidget(selectionButton("CurseForge", rightColumnX, firstButtonY + BUTTON_GAP * 2,
 				() -> {
 					selectSource("CurseForge");
 					status = CurseForgeApi.isConfigured()
@@ -51,20 +51,23 @@ public class DownloadScreen extends Screen {
 							: "Set CURSEFORGE_API_KEY before searching";
 				}));
 
-		searchBox = new EditBox(this.font, this.width / 2 - BUTTON_WIDTH, 166, BUTTON_WIDTH * 2, BUTTON_HEIGHT,
+		searchBox = new EditBox(this.font, this.width / 2 - BUTTON_WIDTH, 102, BUTTON_WIDTH * 2, BUTTON_HEIGHT,
 				Component.literal("Search"));
 		searchBox.setHint(Component.literal("Search Modrinth"));
 		searchBox.setMaxLength(80);
 		addRenderableWidget(searchBox);
 		addRenderableWidget(Button.builder(Component.literal("Search"), button -> search())
-				.bounds(this.width / 2 - BUTTON_WIDTH / 2, 194, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(this.width / 2 - BUTTON_WIDTH, 126, BUTTON_WIDTH - 5, BUTTON_HEIGHT)
 				.build());
 		addRenderableWidget(Button.builder(Component.literal("Back"), button -> onClose())
-				.bounds(this.width / 2 - BUTTON_WIDTH / 2, 228, BUTTON_WIDTH, BUTTON_HEIGHT)
+				.bounds(this.width / 2 + 5, 126, BUTTON_WIDTH - 5, BUTTON_HEIGHT)
 				.build());
 
-		int resultY = 278;
+		int resultY = 174;
 		for (ModrinthApi.SearchResult result : results) {
+			if (resultY + BUTTON_HEIGHT > this.height) {
+				break;
+			}
 			addRenderableWidget(Button.builder(Component.literal(result.title()), button -> download(result))
 					.bounds(this.width / 2 - BUTTON_WIDTH, resultY, BUTTON_WIDTH * 2, BUTTON_HEIGHT)
 					.build());
@@ -102,7 +105,7 @@ public class DownloadScreen extends Screen {
 		search.thenAccept(foundResults ->
 				this.minecraft.execute(() -> {
 					results = foundResults;
-					status = foundResults.isEmpty() ? "No results found" : "Results from Modrinth";
+					status = foundResults.isEmpty() ? "No results found" : "Results from " + selectedSource;
 					rebuildWidgets(query);
 				})).exceptionally(error -> {
 				this.minecraft.execute(() -> {
@@ -157,12 +160,14 @@ public class DownloadScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		renderBackground(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 38, 0xFFFFFF);
+		UiTheme.background(graphics, this);
+		UiTheme.panel(graphics, this.width / 2 - BUTTON_WIDTH - 8, 26,
+				this.width / 2 + BUTTON_WIDTH + 8, 151);
+		UiTheme.title(graphics, this, "Find content from trusted platforms", 8);
 		graphics.drawCenteredString(this.font,
 				Component.literal("Selected: " + selectedType + " | " + selectedSource),
-				this.width / 2, 52, 0xBFBFBF);
+				this.width / 2, 148, UiTheme.ACCENT);
 		super.render(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 260, 0xBFBFBF);
+		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 158, UiTheme.MUTED);
 	}
 }

@@ -30,7 +30,8 @@ public final class ModrinthApi {
 
 	public static CompletableFuture<List<SearchResult>> search(String type, String query) {
 		String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-		String facet = URLEncoder.encode("[[\"project_type:" + projectType(type) + "\"]]",
+		String facet = URLEncoder.encode("[[\"project_type:" + projectType(type) + "\"],[\"versions:1.21.11\"]"
+				+ (type.equals("Mods") ? ",[\"categories:fabric\"]]" : "]"),
 				StandardCharsets.UTF_8);
 		URI uri = URI.create(SEARCH_URL + "?query=" + encodedQuery + "&facets=" + facet + "&limit=8");
 		HttpRequest request = HttpRequest.newBuilder(uri)
