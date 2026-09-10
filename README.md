@@ -83,7 +83,7 @@ If no valid key is present, CurseForge requests may fail or return authorization
 
 ## License
 
-This project is provided as-is for personal and modding use. Add your preferred license before publishing or distributing it publicly.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Repository
 
