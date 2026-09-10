@@ -45,6 +45,11 @@ public final class ModrinthApi {
 	}
 
 	public static CompletableFuture<String> downloadLatest(SearchResult result, String type, Path gameDirectory) {
+		return downloadLatest(result, type, gameDirectory, null);
+	}
+
+	public static CompletableFuture<String> downloadLatest(SearchResult result, String type, Path gameDirectory,
+			Path existingFile) {
 		String versionsUrl = "https://api.modrinth.com/v2/project/" + result.projectId() + "/version"
 				+ "?game_versions=" + encode("[\"1.21.11\"]")
 				+ (type.equals("Mods") ? "&loaders=" + encode("[\"fabric\"]") : "");
@@ -72,7 +77,7 @@ public final class ModrinthApi {
 							.findFirst()
 							.orElse(version.getAsJsonArray("files").get(0).getAsJsonObject());
 					return downloadFile(file.get("url").getAsString(), file.get("filename").getAsString(),
-							contentDirectory(type, gameDirectory));
+							contentDirectory(type, gameDirectory), existingFile);
 				});
 	}
 
@@ -108,7 +113,7 @@ public final class ModrinthApi {
 				});
 	}
 
-	private static CompletableFuture<String> downloadFile(String url, String filename, Path directory) {
+	private static CompletableFuture<String> downloadFile(String url, String filename, Path directory, Path existingFile) {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(url))
 				.timeout(Duration.ofMinutes(2))
 				.header("User-Agent", "Mod-Manager/1.0 (github.com/youcef652/Mod-Manager)")
@@ -122,7 +127,12 @@ public final class ModrinthApi {
 					try {
 						Files.createDirectories(directory);
 						String safeFilename = Path.of(filename).getFileName().toString();
-						Files.write(directory.resolve(safeFilename), response.body());
+						Path target = directory.resolve(safeFilename);
+						Files.write(target, response.body());
+						if (existingFile != null && Files.isRegularFile(existingFile)
+								&& !existingFile.toAbsolutePath().normalize().equals(target.toAbsolutePath().normalize())) {
+							Files.deleteIfExists(existingFile);
+						}
 						return safeFilename;
 					} catch (Exception error) {
 						throw new IllegalStateException("Could not save downloaded file", error);

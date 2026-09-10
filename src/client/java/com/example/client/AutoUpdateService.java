@@ -4,6 +4,7 @@ import com.example.ExampleMod;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -36,8 +37,13 @@ public final class AutoUpdateService {
 	}
 
 	private static void download(ModrinthApi.UpdateResult update) {
+		Path existingFile = FabricLoader.getInstance().getAllMods().stream()
+				.filter(mod -> mod.getMetadata().getId().equals(update.projectId()))
+				.map(ModContainer::getRootPath)
+				.findFirst()
+				.orElse(null);
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
-				"Mods", FabricLoader.getInstance().getGameDir()).thenAccept(filename ->
+				"Mods", FabricLoader.getInstance().getGameDir(), existingFile).thenAccept(filename ->
 				ExampleMod.LOGGER.info("Auto-updated {} to {} ({})", update.projectId(), update.latestVersion(), filename))
 				.exceptionally(error -> {
 					ExampleMod.LOGGER.warn("Could not download update for {}", update.projectId(), error);

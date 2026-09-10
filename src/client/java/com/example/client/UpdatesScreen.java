@@ -9,8 +9,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 public class UpdatesScreen extends Screen {
@@ -62,6 +65,14 @@ public class UpdatesScreen extends Screen {
 				.filter(mod -> !mod.getMetadata().getId().equals("minecraft"))
 				.filter(mod -> !mod.getMetadata().getId().equals("fabricloader"))
 				.filter(mod -> !mod.getMetadata().getId().equals(ExampleMod.MOD_ID))
+				.filter(new java.util.function.Predicate<>() {
+					private final Set<String> seen = new HashSet<>();
+
+					@Override
+					public boolean test(ModContainer mod) {
+						return seen.add(mod.getMetadata().getId());
+					}
+				})
 				.toList();
 
 		List<CompletableFuture<Optional<ModrinthApi.UpdateResult>>> checks = installedMods.stream()
@@ -81,8 +92,13 @@ public class UpdatesScreen extends Screen {
 
 	private void update(ModrinthApi.UpdateResult update) {
 		status = "Downloading " + update.latestName() + "...";
+		Path existingFile = FabricLoader.getInstance().getAllMods().stream()
+				.filter(mod -> mod.getMetadata().getId().equals(update.projectId()))
+				.map(ModContainer::getRootPath)
+				.findFirst()
+				.orElse(null);
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
-				"Mods", this.minecraft.gameDirectory.toPath()).thenAccept(filename -> this.minecraft.execute(() -> {
+				"Mods", this.minecraft.gameDirectory.toPath(), existingFile).thenAccept(filename -> this.minecraft.execute(() -> {
 			status = "Downloaded " + filename;
 			updates.remove(update);
 			clearWidgets();
