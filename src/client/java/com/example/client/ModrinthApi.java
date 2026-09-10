@@ -71,17 +71,14 @@ public final class ModrinthApi {
 								new IllegalStateException("No compatible version found"));
 					}
 					JsonObject version = versions.get(0).getAsJsonObject();
-					JsonObject file = version.getAsJsonArray("files").asList().stream()
-							.map(JsonElement::getAsJsonObject)
-							.filter(candidate -> candidate.has("primary") && candidate.get("primary").getAsBoolean())
-							.findFirst()
-							.orElse(version.getAsJsonArray("files").get(0).getAsJsonObject());
+					JsonObject file = primaryFile(version);
 					return downloadFile(file.get("url").getAsString(), file.get("filename").getAsString(),
 							contentDirectory(type, gameDirectory), existingFile);
 				});
 	}
 
-	public static CompletableFuture<Optional<UpdateResult>> checkForUpdate(String projectId, String currentVersion) {
+	public static CompletableFuture<Optional<UpdateResult>> checkForUpdate(String projectId, String currentVersion,
+			String installedFilename) {
 		String versionsUrl = "https://api.modrinth.com/v2/project/" + projectId + "/version"
 				+ "?game_versions=" + encode("[\"1.21.11\"]")
 				+ "&loaders=" + encode("[\"fabric\"]");
@@ -105,12 +102,34 @@ public final class ModrinthApi {
 					}
 					JsonObject latest = versions.get(0).getAsJsonObject();
 					String latestVersion = latest.get("version_number").getAsString();
-					if (latestVersion.equals(currentVersion)) {
+					String latestFilename = primaryFile(latest).get("filename").getAsString();
+					if (sameVersion(latestVersion, currentVersion)
+							|| (!installedFilename.isBlank() && latestFilename.equals(installedFilename))) {
 						return Optional.<UpdateResult>empty();
 					}
 					return Optional.of(new UpdateResult(projectId, currentVersion, latestVersion,
-							latest.get("name").getAsString()));
+							latest.get("name").getAsString(), latestFilename));
 				});
+	}
+
+	private static boolean sameVersion(String first, String second) {
+		return normalizeVersion(first).equals(normalizeVersion(second));
+	}
+
+	private static JsonObject primaryFile(JsonObject version) {
+		return version.getAsJsonArray("files").asList().stream()
+				.map(JsonElement::getAsJsonObject)
+				.filter(file -> file.has("primary") && file.get("primary").getAsBoolean())
+				.findFirst()
+				.orElse(version.getAsJsonArray("files").get(0).getAsJsonObject());
+	}
+
+	private static String normalizeVersion(String version) {
+		String normalized = version.trim().toLowerCase(java.util.Locale.ROOT);
+		if (normalized.startsWith("v")) {
+			normalized = normalized.substring(1);
+		}
+		return normalized;
 	}
 
 	private static CompletableFuture<String> downloadFile(String url, String filename, Path directory, Path existingFile) {
@@ -184,6 +203,7 @@ public final class ModrinthApi {
 	public record SearchResult(String title, String projectId, String description) {
 	}
 
-	public record UpdateResult(String projectId, String currentVersion, String latestVersion, String latestName) {
+	public record UpdateResult(String projectId, String currentVersion, String latestVersion, String latestName,
+			String latestFilename) {
 	}
 }

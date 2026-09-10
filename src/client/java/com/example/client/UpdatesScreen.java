@@ -77,7 +77,7 @@ public class UpdatesScreen extends Screen {
 
 		List<CompletableFuture<Optional<ModrinthApi.UpdateResult>>> checks = installedMods.stream()
 				.map(mod -> ModrinthApi.checkForUpdate(mod.getMetadata().getId(),
-						mod.getMetadata().getVersion().getFriendlyString())
+						mod.getMetadata().getVersion().getFriendlyString(), installedFilename(mod))
 						.exceptionally(error -> Optional.empty()))
 				.toList();
 		CompletableFuture.allOf(checks.toArray(CompletableFuture[]::new)).thenRun(() -> this.minecraft.execute(() -> {
@@ -88,6 +88,14 @@ public class UpdatesScreen extends Screen {
 			clearWidgets();
 			init();
 		}));
+	}
+
+	private static String installedFilename(ModContainer mod) {
+		return mod.getOrigin().getPaths().stream()
+				.filter(java.nio.file.Files::isRegularFile)
+				.map(path -> path.getFileName().toString())
+				.findFirst()
+				.orElse("");
 	}
 
 	private void update(ModrinthApi.UpdateResult update) {

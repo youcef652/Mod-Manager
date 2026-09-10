@@ -22,7 +22,7 @@ public final class AutoUpdateService {
 
 		List<CompletableFuture<Optional<ModrinthApi.UpdateResult>>> checks = installedMods.stream()
 				.map(mod -> ModrinthApi.checkForUpdate(mod.getMetadata().getId(),
-						mod.getMetadata().getVersion().getFriendlyString())
+						mod.getMetadata().getVersion().getFriendlyString(), installedFilename(mod))
 						.exceptionally(error -> {
 							ExampleMod.LOGGER.debug("Could not check {} for updates", mod.getMetadata().getId(), error);
 							return Optional.empty();
@@ -34,6 +34,14 @@ public final class AutoUpdateService {
 				check.join().ifPresent(AutoUpdateService::download);
 			}
 		});
+	}
+
+	private static String installedFilename(ModContainer mod) {
+		return mod.getOrigin().getPaths().stream()
+				.filter(java.nio.file.Files::isRegularFile)
+				.map(path -> path.getFileName().toString())
+				.findFirst()
+				.orElse("");
 	}
 
 	private static void download(ModrinthApi.UpdateResult update) {
