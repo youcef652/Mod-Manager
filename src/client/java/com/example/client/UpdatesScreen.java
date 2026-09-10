@@ -65,6 +65,7 @@ public class UpdatesScreen extends Screen {
 				.filter(mod -> !mod.getMetadata().getId().equals("minecraft"))
 				.filter(mod -> !mod.getMetadata().getId().equals("fabricloader"))
 				.filter(mod -> !mod.getMetadata().getId().equals(ExampleMod.MOD_ID))
+				.filter(mod -> mod.getOrigin().getKind() != net.fabricmc.loader.api.metadata.ModOrigin.Kind.NESTED)
 				.filter(new java.util.function.Predicate<>() {
 					private final Set<String> seen = new HashSet<>();
 
@@ -91,21 +92,20 @@ public class UpdatesScreen extends Screen {
 	}
 
 	private static String installedFilename(ModContainer mod) {
-		return mod.getOrigin().getPaths().stream()
-				.filter(java.nio.file.Files::isRegularFile)
-				.map(path -> path.getFileName().toString())
-				.findFirst()
-				.orElse("");
+		try {
+			return mod.getOrigin().getPaths().stream()
+					.filter(java.nio.file.Files::isRegularFile)
+					.map(path -> path.getFileName().toString())
+					.findFirst()
+					.orElse("");
+		} catch (UnsupportedOperationException ignored) {
+			return "";
+		}
 	}
 
 	private void update(ModrinthApi.UpdateResult update) {
 		status = "Downloading " + update.latestName() + "...";
-		Path existingFile = FabricLoader.getInstance().getAllMods().stream()
-				.filter(mod -> mod.getMetadata().getId().equals(update.projectId()))
-				.flatMap(mod -> mod.getOrigin().getPaths().stream())
-				.filter(java.nio.file.Files::isRegularFile)
-				.findFirst()
-				.orElse(null);
+		Path existingFile = findInstalledFile(update.projectId());
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
 				"Mods", this.minecraft.gameDirectory.toPath(), existingFile).thenAccept(filename -> this.minecraft.execute(() -> {
 			status = "Downloaded " + filename;
@@ -116,6 +116,24 @@ public class UpdatesScreen extends Screen {
 			this.minecraft.execute(() -> status = "Update failed: " + error.getMessage());
 			return null;
 		});
+	}
+
+	private static Path findInstalledFile(String projectId) {
+		return FabricLoader.getInstance().getAllMods().stream()
+				.filter(mod -> mod.getMetadata().getId().equals(projectId))
+				.map(UpdatesScreen::originPathsSafely)
+				.flatMap(List::stream)
+				.filter(java.nio.file.Files::isRegularFile)
+				.findFirst()
+				.orElse(null);
+	}
+
+	private static List<Path> originPathsSafely(ModContainer mod) {
+		try {
+			return mod.getOrigin().getPaths();
+		} catch (UnsupportedOperationException ignored) {
+			return List.of();
+		}
 	}
 
 	@Override
