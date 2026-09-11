@@ -1,21 +1,104 @@
-MIT License
+# Custom Mod License
 
 Copyright (c) 2026 youcef652
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## 1. Permission to Modify
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is granted to modify, adapt, improve, or build upon this software, provided that the resulting work contains substantial and clearly identifiable modifications.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+A modification is considered substantial only if it meaningfully changes the functionality, behavior, features, code, user interface, or other significant aspects of the original software.
+
+## 2. Redistribution
+
+Redistribution of the original software, or a modified version that does not contain substantial and clearly identifiable modifications, is strictly prohibited.
+
+The following are NOT considered substantial modifications:
+
+* Renaming the mod.
+* Changing only the version number.
+* Changing only the description.
+* Changing only the icon, logo, or other cosmetic assets.
+* Changing metadata files without meaningful changes to the software.
+* Repackaging, re-uploading, or mirroring the original mod.
+* Making trivial code changes that do not meaningfully alter the software.
+
+A modified version must provide meaningful changes beyond the original software.
+
+## 3. Attribution
+
+Any redistribution of a modified version must clearly and visibly credit the original author:
+
+**Original author: Youcef Bouz**
+
+The attribution must also include a reference to the original project:
+
+**Original project: [INSERT ORIGINAL MOD LINK]**
+
+The attribution must not be removed, hidden, or replaced.
+
+## 4. No Misrepresentation
+
+Modified versions must not be presented as the original software.
+
+The distributor must clearly indicate that the version has been modified.
+
+For example:
+
+> This is a modified version of [Mod Name], originally created by Youcef Bouz.
+
+## 5. Commercial Use
+
+Commercial use and monetization of substantially modified versions are permitted.
+
+The modifier may distribute, sell, monetize, or otherwise commercially use their modified version, provided that all other requirements of this license are followed.
+
+This permission does not grant permission to sell, monetize, or redistribute the original unmodified software.
+
+## 6. Source and Modifications
+
+If a modified version is publicly distributed, the distributor must clearly identify that modifications were made.
+
+The distributor is not required to use the same name as the original project, but must not imply that the modified version is the official original version.
+
+## 7. Ownership
+
+All original code, assets, designs, and other material created by the original author remain the property of the original author, except where otherwise stated.
+
+This license does not transfer ownership or copyright of the original work.
+
+## 8. Third-Party Components
+
+This license applies only to material owned by the original author.
+
+Third-party libraries, code, assets, or other components remain subject to their respective licenses.
+
+## 9. Prohibited Redistribution
+
+You may not:
+
+1. Upload the original unmodified mod to another platform.
+2. Re-upload the original mod under a different name.
+3. Repackage the original mod and claim it as a new project.
+4. Make only trivial changes and redistribute the result.
+5. Remove or obscure the original author's attribution.
+6. Claim ownership of the original work.
+7. Distribute a modified version without clearly identifying it as modified.
+
+## 10. Acceptance
+
+By modifying, redistributing, or commercially using this software, you agree to comply with the terms of this license.
+
+If you do not agree to these terms, you may not modify or redistribute the software.
+
+## 11. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE, MODIFICATION, OR DISTRIBUTION OF THE SOFTWARE.
+
+---
+
+**Original Author:** Youcef Bouz
+**Year:** 2026
+**Original Project:** [INSERT ORIGINAL MOD LINK]
