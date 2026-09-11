@@ -7,13 +7,21 @@ import net.fabricmc.loader.api.ModContainer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CompletableFuture;
 
 public final class AutoUpdateService {
+	private static final AtomicBoolean STARTED = new AtomicBoolean();
+
 	private AutoUpdateService() {
 	}
 
-	public static void start() {
+	public static void startIfEnabled() {
+		if (!ModManagerSettings.autoUpdate || !ModManagerSettings.updateMods
+				|| !STARTED.compareAndSet(false, true)) {
+			return;
+		}
+		ExampleMod.LOGGER.info("Starting automatic mod update check");
 		List<ModContainer> installedMods = FabricLoader.getInstance().getAllMods().stream()
 				.filter(mod -> !mod.getMetadata().getId().equals("minecraft"))
 				.filter(mod -> !mod.getMetadata().getId().equals("fabricloader"))
@@ -25,15 +33,21 @@ public final class AutoUpdateService {
 				.map(mod -> ModrinthApi.checkForUpdate(mod.getMetadata().getId(),
 						mod.getMetadata().getVersion().getFriendlyString(), installedFilename(mod))
 						.exceptionally(error -> {
-							ExampleMod.LOGGER.debug("Could not check {} for updates", mod.getMetadata().getId(), error);
+							ExampleMod.LOGGER.warn("Could not check {} for updates", mod.getMetadata().getId(), error);
 							return Optional.empty();
 						}))
 				.toList();
 
 		CompletableFuture.allOf(checks.toArray(CompletableFuture[]::new)).thenRun(() -> {
+			int available = 0;
 			for (CompletableFuture<Optional<ModrinthApi.UpdateResult>> check : checks) {
-				check.join().ifPresent(AutoUpdateService::download);
+				Optional<ModrinthApi.UpdateResult> result = check.join();
+				if (result.isPresent()) {
+					available++;
+					download(result.get());
+				}
 			}
+			ExampleMod.LOGGER.info("Automatic update check finished: {} update(s) available", available);
 		});
 	}
 

@@ -18,9 +18,6 @@ public class ExampleModClient implements ClientModInitializer {
 		ModManagerSettings.load();
 		logGameDirectories();
 		ScreenEvents.AFTER_INIT.register(this::addTitleScreenButton);
-		if (ModManagerSettings.autoUpdate && ModManagerSettings.updateMods) {
-			AutoUpdateService.start();
-		}
 	}
 
 	private void logGameDirectories() {
@@ -38,6 +35,7 @@ public class ExampleModClient implements ClientModInitializer {
 		if (!(screen instanceof TitleScreen)) {
 			return;
 		}
+		AutoUpdateService.startIfEnabled();
 
 		int buttonWidth = 140;
 		int buttonHeight = 20;

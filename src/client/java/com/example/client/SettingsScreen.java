@@ -29,6 +29,9 @@ public class SettingsScreen extends Screen {
 				value -> {
 					ModManagerSettings.autoUpdate = value;
 					ModManagerSettings.save();
+					if (value) {
+						AutoUpdateService.startIfEnabled();
+					}
 				}));
 		addRenderableWidget(toggleButton("Update Mods", firstButtonY + BUTTON_GAP,
 				() -> ModManagerSettings.updateMods,
