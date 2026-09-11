@@ -3,6 +3,8 @@ package com.example.client;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import com.example.ExampleMod;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,6 +91,12 @@ public final class ModManagerSettings {
 			default -> modsSource = source;
 		}
 		save();
+	}
+
+	public static Path gameDirectory() {
+		Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath().toAbsolutePath().normalize();
+		ExampleMod.LOGGER.info("Detected Minecraft game directory: {}", gameDirectory);
+		return gameDirectory;
 	}
 
 	private static Path configFile() {

@@ -107,7 +107,7 @@ public class UpdatesScreen extends Screen {
 		status = "Downloading " + update.latestName() + "...";
 		Path existingFile = findInstalledFile(update.projectId());
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
-				"Mods", this.minecraft.gameDirectory.toPath(), existingFile).thenAccept(filename -> this.minecraft.execute(() -> {
+				"Mods", ModManagerSettings.gameDirectory(), existingFile).thenAccept(filename -> this.minecraft.execute(() -> {
 			status = "Downloaded " + filename;
 			updates.remove(update);
 			clearWidgets();

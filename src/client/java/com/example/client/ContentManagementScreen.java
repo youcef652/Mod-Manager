@@ -90,7 +90,7 @@ public class ContentManagementScreen extends Screen {
 	}
 
 	private Path directory() {
-		return FabricLoader.getInstance().getGameDir().resolve(switch (selectedType) {
+		return ModManagerSettings.gameDirectory().resolve(switch (selectedType) {
 			case "Resource Packs" -> "resourcepacks";
 			case "Shaders" -> "shaderpacks";
 			case "Data Packs" -> "datapacks";

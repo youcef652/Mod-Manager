@@ -1,5 +1,6 @@
 package com.example.client;
 
+import com.example.ExampleMod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -239,11 +240,17 @@ public final class ModrinthApi {
 						Files.write(target, response.body());
 						if (existingFile != null && Files.isRegularFile(existingFile)
 								&& !existingFile.toAbsolutePath().normalize().equals(target.toAbsolutePath().normalize())) {
-							Files.deleteIfExists(existingFile);
+							try {
+								Files.deleteIfExists(existingFile);
+							} catch (Exception error) {
+								ExampleMod.LOGGER.warn("Could not remove old mod file while Minecraft is running: {}",
+										existingFile);
+							}
 						}
 						return safeFilename;
 					} catch (Exception error) {
-						throw new IllegalStateException("Could not save downloaded file", error);
+						throw new IllegalStateException("Could not save downloaded file to "
+								+ directory.resolve(Path.of(filename).getFileName()), error);
 					}
 				});
 	}

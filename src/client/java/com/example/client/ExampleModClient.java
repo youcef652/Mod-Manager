@@ -1,5 +1,6 @@
 package com.example.client;
 
+import com.example.ExampleMod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.impl.client.screen.ScreenExtensions;
@@ -8,13 +9,27 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class ExampleModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ModManagerSettings.load();
+		logGameDirectories();
 		ScreenEvents.AFTER_INIT.register(this::addTitleScreenButton);
 		if (ModManagerSettings.autoUpdate && ModManagerSettings.updateMods) {
 			AutoUpdateService.start();
+		}
+	}
+
+	private void logGameDirectories() {
+		Path gameDirectory = ModManagerSettings.gameDirectory();
+		try {
+			Files.createDirectories(gameDirectory.resolve("mods"));
+			ExampleMod.LOGGER.info("Mod Manager will install mods in: {}", gameDirectory.resolve("mods"));
+		} catch (Exception error) {
+			ExampleMod.LOGGER.error("Could not access Minecraft mods directory: {}", gameDirectory.resolve("mods"), error);
 		}
 	}
 

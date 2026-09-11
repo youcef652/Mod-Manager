@@ -52,7 +52,7 @@ public final class AutoUpdateService {
 	private static void download(ModrinthApi.UpdateResult update) {
 		Path existingFile = findInstalledFile(update.projectId());
 		ModrinthApi.downloadLatest(new ModrinthApi.SearchResult(update.latestName(), update.projectId(), ""),
-				"Mods", FabricLoader.getInstance().getGameDir(), existingFile).thenAccept(filename ->
+				"Mods", ModManagerSettings.gameDirectory(), existingFile).thenAccept(filename ->
 				ExampleMod.LOGGER.info("Auto-updated {} to {} ({})", update.projectId(), update.latestVersion(), filename))
 				.exceptionally(error -> {
 					ExampleMod.LOGGER.warn("Could not download update for {}", update.projectId(), error);

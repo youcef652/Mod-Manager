@@ -122,7 +122,7 @@ public class DownloadScreen extends Screen {
 			return;
 		}
 		status = "Downloading " + result.title() + "...";
-		ModrinthApi.downloadLatest(result, selectedType, this.minecraft.gameDirectory.toPath())
+		ModrinthApi.downloadLatest(result, selectedType, ModManagerSettings.gameDirectory())
 				.thenAccept(filename -> this.minecraft.execute(() ->
 						status = "Downloaded " + filename))
 				.exceptionally(error -> {
@@ -133,7 +133,7 @@ public class DownloadScreen extends Screen {
 
 	private void downloadCurseForge(ModrinthApi.SearchResult result) {
 		status = "Downloading " + result.title() + "...";
-		CurseForgeApi.downloadLatest(result, selectedType, this.minecraft.gameDirectory.toPath())
+		CurseForgeApi.downloadLatest(result, selectedType, ModManagerSettings.gameDirectory())
 				.thenAccept(filename -> this.minecraft.execute(() -> status = "Downloaded " + filename))
 				.exceptionally(error -> {
 					this.minecraft.execute(() -> status = "Download failed: " + error.getMessage());
