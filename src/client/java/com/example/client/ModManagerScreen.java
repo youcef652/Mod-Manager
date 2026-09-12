@@ -12,7 +12,6 @@ public class ModManagerScreen extends Screen {
 	private static final int TOP_BUTTON_HEIGHT = 38;
 	private static final int SIDE_BUTTON_HEIGHT = 34;
 	private static final int CONTENT_X = 260;
-	private static final int BUTTON_RADIUS = 6;
 	private String status = "";
 
 	public ModManagerScreen() {
