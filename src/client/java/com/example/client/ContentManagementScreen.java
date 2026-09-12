@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class ContentManagementScreen extends Screen {
-	private static final int BUTTON_WIDTH = 112;
+	private static final int BUTTON_WIDTH = 118;
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int GAP = 22;
 
@@ -29,15 +29,15 @@ public class ContentManagementScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int left = this.width / 2 - BUTTON_WIDTH - 4;
-		int right = this.width / 2 + 4;
+		int left = this.width / 2 - BUTTON_WIDTH - 6;
+		int right = this.width / 2 + 6;
 		addRenderableWidget(typeButton("Mods", left, 30));
 		addRenderableWidget(typeButton("Resource Packs", right, 30));
 		addRenderableWidget(typeButton("Shaders", left, 52));
 		addRenderableWidget(typeButton("Data Packs", right, 52));
 
 		files = listFiles();
-		int rowY = 82;
+		int rowY = 84;
 		for (Path file : files) {
 			if (rowY + BUTTON_HEIGHT > 158) {
 				break;
@@ -45,25 +45,24 @@ public class ContentManagementScreen extends Screen {
 			Path item = file;
 			addRenderableWidget(Button.builder(Component.literal(trimName(file.getFileName().toString())),
 					button -> selectFile(item))
-					.bounds(this.width / 2 - 110, rowY, 220, BUTTON_HEIGHT)
+					.bounds(this.width / 2 - 118, rowY, 236, BUTTON_HEIGHT)
 					.build());
 			rowY += GAP;
 		}
 
-		nameBox = new EditBox(this.font, this.width / 2 - 110, 166, 220, BUTTON_HEIGHT,
-				Component.literal("New name"));
-		nameBox.setHint(Component.literal("New name"));
+		nameBox = new EditBox(this.font, this.width / 2 - 118, 166, 236, BUTTON_HEIGHT, Component.literal("File name"));
+		nameBox.setHint(Component.literal("File name"));
 		nameBox.setMaxLength(120);
 		addRenderableWidget(nameBox);
-		addRenderableWidget(Button.builder(Component.literal("Rename Selected"), button -> renameSelected())
-				.bounds(this.width / 2 - 110, 190, 70, BUTTON_HEIGHT).build());
+		addRenderableWidget(Button.builder(Component.literal("Rename"), button -> renameSelected())
+				.bounds(this.width / 2 - 118, 190, 74, BUTTON_HEIGHT).build());
 		String toggleLabel = selectedFile != null && isDisabled(selectedFile) ? "On" : "Off";
 		addRenderableWidget(Button.builder(Component.literal(toggleLabel), button -> toggleSelected())
-				.bounds(this.width / 2 - 36, 190, 72, BUTTON_HEIGHT).build());
-		addRenderableWidget(Button.builder(Component.literal("Delete Selected"), button -> deleteSelected())
-				.bounds(this.width / 2 + 38, 190, 72, BUTTON_HEIGHT).build());
+				.bounds(this.width / 2 - 40, 190, 80, BUTTON_HEIGHT).build());
+		addRenderableWidget(Button.builder(Component.literal("Delete"), button -> deleteSelected())
+				.bounds(this.width / 2 + 44, 190, 74, BUTTON_HEIGHT).build());
 		addRenderableWidget(Button.builder(Component.literal("Back"), button -> onClose())
-				.bounds(this.width / 2 - 110, 214, 220, BUTTON_HEIGHT).build());
+				.bounds(this.width / 2 - 118, 214, 236, BUTTON_HEIGHT).build());
 	}
 
 	private Button typeButton(String type, int x, int y) {
@@ -170,7 +169,7 @@ public class ContentManagementScreen extends Screen {
 			Files.move(selectedFile, target);
 			selectedFile = target;
 			nameBox.setValue(target.getFileName().toString());
-			status = isDisabled(target) ? "Disabled successfully" : "Enabled successfully";
+			status = isDisabled(target) ? "Enabled successfully" : "Disabled successfully";
 			refresh();
 		} catch (Exception error) {
 			status = "Could not change file state";
@@ -198,9 +197,10 @@ public class ContentManagementScreen extends Screen {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		UiTheme.background(graphics, this);
-		UiTheme.panel(graphics, this.width / 2 - 116, 24, this.width / 2 + 116, 238);
-		UiTheme.title(graphics, this, "Delete or rename installed content", 5);
-		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 156, UiTheme.MUTED);
+		UiTheme.panel(graphics, this.width / 2 - 150, 22, this.width / 2 + 150, 250);
+		graphics.drawCenteredString(this.font, Component.literal("File Browser"), this.width / 2, 28, 0xFFEAF7F5);
+		graphics.drawCenteredString(this.font, Component.literal("Manage installed files and toggle them on or off"), this.width / 2, 42, 0xFF9ABAB5);
+		graphics.drawCenteredString(this.font, Component.literal(status), this.width / 2, 160, 0xFF8AF0C5);
 		super.render(graphics, mouseX, mouseY, delta);
 	}
 }
