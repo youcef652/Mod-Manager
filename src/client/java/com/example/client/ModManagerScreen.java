@@ -11,7 +11,7 @@ public class ModManagerScreen extends Screen {
 	private static final int LEFT_MENU_WIDTH = 220;
 	private static final int TOP_BUTTON_HEIGHT = 38;
 	private static final int SIDE_BUTTON_HEIGHT = 34;
-	private static final int CONTENT_X = 260;
+	private static final int CONTENT_X = 265;
 	private String status = "";
 
 	public ModManagerScreen() {
@@ -20,7 +20,7 @@ public class ModManagerScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int topButtonWidth = 176;
+		int topButtonWidth = 170;
 		int firstTopButtonX = MARGIN;
 		int secondTopButtonX = firstTopButtonX + topButtonWidth + 12;
 		int thirdTopButtonX = secondTopButtonX + topButtonWidth + 12;
@@ -93,24 +93,56 @@ public class ModManagerScreen extends Screen {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		graphics.fill(0, 0, this.width, this.height, 0xFF071A22);
 		graphics.fill(0, 0, this.width, TOP_HEADER_HEIGHT, 0xFF0C1F2F);
-		graphics.fill(0, TOP_HEADER_HEIGHT, this.width, TOP_HEADER_HEIGHT + 2, 0xFF1E3B4C);
+		graphics.fill(0, TOP_HEADER_HEIGHT, this.width, TOP_HEADER_HEIGHT + 2, 0xFF2C4258);
 		graphics.fill(MARGIN, 64, this.width - MARGIN, this.height - 52, 0x0D1A2B33);
 		graphics.fill(MARGIN, 64, MARGIN + LEFT_MENU_WIDTH, this.height - 52, 0x0F1D2A39);
 		graphics.fill(MARGIN + LEFT_MENU_WIDTH + 8, 64, this.width - MARGIN - 220, this.height - 52, 0x0A182B38);
 		graphics.fill(this.width - 220 - MARGIN, 64, this.width - MARGIN, this.height - 52, 0x0A1D2B36);
 		graphics.fill(MARGIN, 64, this.width - MARGIN, 66, 0xFF2D4052);
+		graphics.fill(MARGIN + 14, 118, MARGIN + LEFT_MENU_WIDTH - 14, 118 + 32, 0xFF0A3350);
+		graphics.fill(MARGIN + 11, 122, MARGIN + 18, 122 + 24, 0xFF38E39A);
+		graphics.fill(MARGIN, 116, this.width - MARGIN, 117, 0xFF2A3F53);
 
 		graphics.drawString(this.font, Component.literal("Mod Manager"), MARGIN + 8, 16, 0xFFF3F8FF, false);
 		graphics.drawString(this.font, Component.literal("-"), this.width - 60, 12, 0xFFAFBED0, false);
 		graphics.drawString(this.font, Component.literal("X"), this.width - 30, 10, 0xFFAFBED0, false);
-		graphics.drawString(this.font, Component.literal("Mods"), MARGIN + 14, 90, 0xFFF2F7FF, false);
-		graphics.drawString(this.font, Component.literal("Resource Packs"), MARGIN + 14, 134, 0xFFF2F7FF, false);
-		graphics.drawString(this.font, Component.literal("Shader Packs"), MARGIN + 14, 178, 0xFFF2F7FF, false);
-		graphics.drawString(this.font, Component.literal("Data Packs"), MARGIN + 14, 222, 0xFFF2F7FF, false);
+		graphics.drawString(this.font, Component.literal("Mods"), MARGIN + 24, 90, 0xFFF2F7FF, false);
+		graphics.drawString(this.font, Component.literal("Resource Packs"), MARGIN + 24, 134, 0xFFF2F7FF, false);
+		graphics.drawString(this.font, Component.literal("Shader Packs"), MARGIN + 24, 178, 0xFFF2F7FF, false);
+		graphics.drawString(this.font, Component.literal("Data Packs"), MARGIN + 24, 222, 0xFFF2F7FF, false);
 
-		graphics.drawString(this.font, Component.literal("Search mods..."), CONTENT_X + 62, 96, 0xFF7D8E9D, false);
-		graphics.drawString(this.font, Component.literal("Sort by:"), CONTENT_X + 530, 96, 0xFF7D8E9D, false);
-		graphics.drawString(this.font, Component.literal("Name"), CONTENT_X + 620, 96, 0xFFECF5FF, false);
+		graphics.fill(CONTENT_X, 118, CONTENT_X + 610, 152, 0xFF061A2A);
+		graphics.fill(CONTENT_X + 12, 126, CONTENT_X + 36, 146, 0xFF1B3247);
+		graphics.drawString(this.font, Component.literal("Search mods..."), CONTENT_X + 46, 132, 0xFF7D8E9D, false);
+		graphics.drawString(this.font, Component.literal("Sort by:"), CONTENT_X + 472, 132, 0xFF7D8E9D, false);
+		graphics.drawString(this.font, Component.literal("Name"), CONTENT_X + 544, 132, 0xFFECF5FF, false);
+		graphics.fill(CONTENT_X + 600, 126, CONTENT_X + 618, 146, 0xFF1D374B);
+		graphics.drawString(this.font, Component.literal("v"), CONTENT_X + 607, 128, 0xFFE4F2FF, false);
+
+		int listY = 170;
+		int[] listColors = {0xFF122B3B, 0xFF0E2332, 0xFF122B3B, 0xFF0E2332, 0xFF122B3B, 0xFF0E2332};
+		String[] names = {"Fabric API", "Sodium", "Lithium", "Indium", "Mod Menu", "JourneyMap"};
+		String[] descs = {"Essential hooks and utilities", "High performance rendering engine", "Optimizes the game for better performance",
+				"Adds support for Sodium rendering features", "View and configure mods in-game", "Real-time map and minimap"};
+		for (int i = 0; i < names.length; i++) {
+			int y = listY + i * 58;
+			graphics.fill(CONTENT_X, y, CONTENT_X + 820, y + 52, listColors[i]);
+			graphics.fill(CONTENT_X + 12, y + 8, CONTENT_X + 44, y + 40, 0xFF2B3B4F);
+			graphics.drawString(this.font, Component.literal(names[i]), CONTENT_X + 62, y + 10, 0xFFF3F8FF, false);
+			graphics.drawString(this.font, Component.literal(descs[i]), CONTENT_X + 62, y + 26, 0xFF7D8E9D, false);
+			graphics.fill(CONTENT_X + 721, y + 15, CONTENT_X + 765, y + 36, 0xFF2CE49A);
+			graphics.fill(CONTENT_X + 749, y + 19, CONTENT_X + 761, y + 32, 0xFFFFFFFF);
+			graphics.drawString(this.font, Component.literal("Fabric"), CONTENT_X + 780, y + 14, 0xFFB7CFE0, false);
+		}
+
+		graphics.fill(this.width - 202, 90, this.width - 18, 92, 0xFF1D3347);
+		graphics.fill(this.width - 198, 96, this.width - 26, 126, 0xFF122C3F);
+		graphics.fill(this.width - 198, 136, this.width - 26, 166, 0xFF122C3F);
+		graphics.fill(this.width - 198, 176, this.width - 26, 206, 0xFF122C3F);
+		graphics.drawString(this.font, Component.literal("Import File"), this.width - 176, 110, 0xFFEAF6FF, false);
+		graphics.drawString(this.font, Component.literal("Export Files"), this.width - 176, 150, 0xFFEAF6FF, false);
+		graphics.drawString(this.font, Component.literal("Open Game Directory"), this.width - 192, 190, 0xFFEAF6FF, false);
+
 		graphics.drawString(this.font, Component.literal("8 mods installed"), MARGIN + 10, this.height - 28, 0xFF9DB2C2, false);
 		graphics.drawString(this.font, Component.literal("Minecraft 1.21.1"), this.width - 200, this.height - 28, 0xFF9DB2C2, false);
 		graphics.drawString(this.font, Component.literal("Fabric 0.16.14"), this.width - 90, this.height - 28, 0xFF9DB2C2, false);

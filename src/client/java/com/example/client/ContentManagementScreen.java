@@ -57,8 +57,7 @@ public class ContentManagementScreen extends Screen {
 		addRenderableWidget(nameBox);
 		addRenderableWidget(Button.builder(Component.literal("Rename Selected"), button -> renameSelected())
 				.bounds(this.width / 2 - 110, 190, 70, BUTTON_HEIGHT).build());
-		String toggleLabel = selectedFile != null && isDisabled(selectedFile)
-				? "Enable Selected" : "Disable Selected";
+		String toggleLabel = selectedFile != null && isDisabled(selectedFile) ? "On" : "Off";
 		addRenderableWidget(Button.builder(Component.literal(toggleLabel), button -> toggleSelected())
 				.bounds(this.width / 2 - 36, 190, 72, BUTTON_HEIGHT).build());
 		addRenderableWidget(Button.builder(Component.literal("Delete Selected"), button -> deleteSelected())
