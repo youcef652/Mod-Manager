@@ -1,6 +1,5 @@
 package com.example.client;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -9,7 +8,6 @@ import net.minecraft.network.chat.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ContentManagementScreen extends Screen {
@@ -58,9 +56,13 @@ public class ContentManagementScreen extends Screen {
 		nameBox.setMaxLength(120);
 		addRenderableWidget(nameBox);
 		addRenderableWidget(Button.builder(Component.literal("Rename Selected"), button -> renameSelected())
-				.bounds(this.width / 2 - 110, 190, 108, BUTTON_HEIGHT).build());
+				.bounds(this.width / 2 - 110, 190, 70, BUTTON_HEIGHT).build());
+		String toggleLabel = selectedFile != null && isDisabled(selectedFile)
+				? "Enable Selected" : "Disable Selected";
+		addRenderableWidget(Button.builder(Component.literal(toggleLabel), button -> toggleSelected())
+				.bounds(this.width / 2 - 36, 190, 72, BUTTON_HEIGHT).build());
 		addRenderableWidget(Button.builder(Component.literal("Delete Selected"), button -> deleteSelected())
-				.bounds(this.width / 2 + 2, 190, 108, BUTTON_HEIGHT).build());
+				.bounds(this.width / 2 + 38, 190, 72, BUTTON_HEIGHT).build());
 		addRenderableWidget(Button.builder(Component.literal("Back"), button -> onClose())
 				.bounds(this.width / 2 - 110, 214, 220, BUTTON_HEIGHT).build());
 	}
@@ -149,6 +151,35 @@ public class ContentManagementScreen extends Screen {
 		} catch (Exception error) {
 			status = "Delete failed";
 		}
+	}
+
+	private void toggleSelected() {
+		if (selectedFile == null) {
+			status = "Select a file first";
+			return;
+		}
+		String filename = selectedFile.getFileName().toString();
+		String toggledName = isDisabled(selectedFile)
+				? filename.substring(0, filename.length() - ".disabled".length())
+				: filename + ".disabled";
+		try {
+			Path target = directory().resolve(toggledName).normalize();
+			if (!target.getParent().equals(directory()) || Files.exists(target)) {
+				status = "A file with that name already exists";
+				return;
+			}
+			Files.move(selectedFile, target);
+			selectedFile = target;
+			nameBox.setValue(target.getFileName().toString());
+			status = isDisabled(target) ? "Disabled successfully" : "Enabled successfully";
+			refresh();
+		} catch (Exception error) {
+			status = "Could not change file state";
+		}
+	}
+
+	private boolean isDisabled(Path file) {
+		return file.getFileName().toString().endsWith(".disabled");
 	}
 
 	private void refresh() {
