@@ -21,7 +21,7 @@ public class ExampleMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("زميط عاشق ماتنو با با با!");
+		LOGGER.info("Hello Fabric world!");
 	}
 
 	public static Identifier id(String path) {
